@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Machines à éprouver × Académie — Table de correspondance et de veille</title>
+<meta name="description" content="Septième table de l'écosystème histoire-des-sciences.eu : correspondances mesurées entre les machines à éprouver (MVC-G, MCS, banc spectral KO-6) et la recherche académique, avec registre de veille et futurs chantiers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Charte harmonisée écosystème Portemann : papier clair #f7f5ee, encre #2a2d36, or #a8842f
+   (variables du thème hds-bibliotheque). Titres Cormorant Garamond, texte Inter. */
+:root {
+    --fond: #f7f5ee;
+    --encre: #2a2d36;
+    --terracotta: #a8842f;
+    --vert: #8f6f28;
+    --bordure: #e3dfd3;
+    --carte: #ffffff;
+    --muted: #6d685b;
+    --radius: 10px;
+    --ombre: 0 1px 3px rgba(42, 45, 54, 0.08);
+    --ok: #3d7a4e;
+    --warn: #b07a1e;
+    --fail: #a03a2e;
+    --dormant: #6d685b;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fond); color: var(--encre);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 1.25rem; }
+h1, h2, h3 { font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; font-weight: normal; line-height: 1.25; }
+h1 { font-size: 1.9rem; margin: 1.5rem 0 0.75rem; }
+h2 { font-size: 1.4rem; margin: 2.2rem 0 0.6rem; border-bottom: 1px solid var(--bordure); padding-bottom: 0.3rem; }
+h3 { font-size: 1.1rem; margin: 1.2rem 0 0.35rem; }
+a { color: var(--terracotta); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.muted { color: var(--muted); font-size: 0.92em; }
+code { background: #efece1; border-radius: 4px; padding: 0 0.3em; font-size: 0.92em; }
+
+.site-header { position: sticky; top: 0; z-index: 100; background: var(--carte);
+    border-bottom: 1px solid var(--bordure); box-shadow: var(--ombre); }
+.site-header .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.5rem;
+    padding-top: 0.6rem; padding-bottom: 0.6rem; }
+.site-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.25rem; color: var(--encre); }
+.site-title:hover { text-decoration: none; color: var(--terracotta); }
+.main-nav ul { display: flex; flex-wrap: wrap; gap: 0.15rem; list-style: none; margin: 0; padding: 0; }
+.main-nav a { display: block; padding: 0.4rem 0.65rem; color: var(--encre); border-radius: 6px; font-size: 0.95rem; }
+.main-nav a:hover { background: var(--fond); text-decoration: none; }
+.main-nav a.active { background: var(--terracotta); color: #fff; }
+
+main.wrap { padding-top: 0.5rem; padding-bottom: 3rem; }
+.hero { text-align: center; padding: 2.5rem 1rem 1.5rem; }
+.hero h1 { font-size: 2.3rem; margin: 0 0 0.5rem; }
+.hero-sub { font-size: 1.1rem; color: var(--muted); margin: 0.2rem 0; }
+.hero-devise { font-family: Georgia, serif; font-style: italic; color: var(--terracotta); }
+
+.counters { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin: 1.5rem 0; }
+.counter { background: var(--carte); border: 1px solid var(--bordure); border-radius: var(--radius);
+    box-shadow: var(--ombre); text-align: center; padding: 1rem 0.5rem; }
+.counter-value { display: block; font-family: Georgia, serif; font-size: 1.8rem; color: var(--terracotta); }
+.counter-label { color: var(--muted); font-size: 0.9rem; }
+@media (max-width: 760px) { .counters { grid-template-columns: repeat(2, 1fr); } }
+
+.card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; margin: 1rem 0; }
+@media (max-width: 900px) { .card-grid { grid-template-columns: 1fr; } }
+.card { background: var(--carte); border: 1px solid var(--bordure); border-radius: var(--radius);
+    box-shadow: var(--ombre); padding: 0.9rem 1.1rem; }
+
+.table-scroll { overflow-x: auto; margin: 0.8rem 0 1.4rem; }
+table { border-collapse: collapse; width: 100%; background: var(--carte);
+    border: 1px solid var(--bordure); border-radius: var(--radius); overflow: hidden; box-shadow: var(--ombre); }
+th, td { text-align: left; vertical-align: top; padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--bordure);
+    font-size: 0.93rem; }
+th { background: #efece1; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.02rem; font-weight: 600; }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #faf8f1; }
+
+.verdict { display: inline-block; font-weight: 600; font-size: 0.8rem; padding: 0.05rem 0.5rem;
+    border-radius: 999px; white-space: nowrap; }
+.v-splus, .v-csplus { background: #e4efe6; color: var(--ok); border: 1px solid #bcd8c2; }
+.v-p, .v-csp { background: #f6ecd4; color: var(--warn); border: 1px solid #e3d2a6; }
+.v-sminus, .v-csminus, .v-csi { background: #f4e0dc; color: var(--fail); border: 1px solid #e0b7b0; }
+.v-dort { background: #eceae2; color: var(--dormant); border: 1px solid #d5d1c4; }
+.v-open { background: #e2e8f0; color: #3a5878; border: 1px solid #c2cfdd; }
+
+.charte { background: var(--carte); border-left: 4px solid var(--terracotta); border-radius: 0 var(--radius) var(--radius) 0;
+    box-shadow: var(--ombre); padding: 1rem 1.25rem; margin: 1.5rem 0; }
+.note { font-size: 0.9rem; color: var(--muted); }
+footer.site-footer { border-top: 1px solid var(--bordure); background: var(--carte); padding: 1.5rem 0 2.5rem; margin-top: 2rem; }
+footer .muted { font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="wrap">
+        <a class="site-title" href="#">Machines × Académie</a>
+        <nav class="main-nav"><ul>
+            <li><a class="active" href="#accueil">Accueil</a></li>
+            <li><a href="#machines">Résultats des machines</a></li>
+            <li><a href="#correspondances">Correspondances</a></li>
+            <li><a href="#veille">Veille</a></li>
+            <li><a href="#chantiers">Futurs chantiers</a></li>
+            <li><a href="#agents">Agents</a></li>
+        </ul></nav>
+    </div>
+</header>
+<main class="wrap" id="accueil">
+
+<section class="hero">
+    <h1>Machines à éprouver × Recherche académique</h1>
+    <p class="hero-sub">Septième table de l'écosystème — la table des interlocuteurs.</p>
+    <p class="hero-devise">Un verdict mesuré ne parle pas seul : cette table le met en face de ceux qui mesurent ailleurs.</p>
+</section>
+
+<section class="counters">
+    <div class="counter"><span class="counter-value">3</span><span class="counter-label">machines actives</span></div>
+    <div class="counter"><span class="counter-value">132</span><span class="counter-label">pesées MVC-G</span></div>
+    <div class="counter"><span class="counter-value">30</span><span class="counter-label">cartes MCS scellées</span></div>
+    <div class="counter"><span class="counter-value">21</span><span class="counter-label">correspondances académiques</span></div>
+</section>
+
+<section class="charte">
+    <h3 style="margin-top:0">Charte de la table</h3>
+    <p>Cette table <strong>aligne</strong>, elle ne <strong>juge</strong> pas. Chaque ligne met en regard un fait de machine
+    (verdict publié, protocole gelé, empreinte SHA-256) et un fait académique (publication, collaboration, borne expérimentale),
+    puis nomme le chantier où les deux pourraient se répondre. Un <span class="verdict v-splus">S+</span> ou
+    <span class="verdict v-csplus">CS+</span> signifie « compatible, avec réserve » — jamais « vrai ».
+    Les échecs (<span class="verdict v-sminus">S−</span>, <span class="verdict v-csminus">CS−</span>,
+    <span class="verdict v-csi">CSi</span>) et les dormeurs (<span class="verdict v-dort">dort</span>) sont publiés
+    au même titre que les succès.</p>
+    <p class="note">Lecture : les trois premières sections listent les résultats des machines ; la grande table de
+    correspondance suit ; viennent le registre de veille (positions pré-publiées et conditions de mort) et les futurs
+    chantiers proposés. État de la recherche académique vérifié au 7 novembre 2026.</p>
+</section>
+
+<!-- ======================= A. RÉSULTATS DES MACHINES ======================= -->
+<h2 id="machines">A — Les résultats des machines à éprouver</h2>
+<p class="note">Trois machines actives, une discipline : zéro paramètre ajusté, protocole gelé avant la mesure,
+levier discriminant, nul honnête, échecs publiés (B3-FAIL), empreintes SHA-256.
+Sources : <a href="https://github.com/PORTEMANN/mvcg" rel="external">mvcg</a> ·
+<a href="https://github.com/PORTEMANN/coincidences-stables" rel="external">coincidences-stables</a> ·
+<a href="https://github.com/PORTEMANN/noetic-machine-complete" rel="external">noetic-machine-complete</a> ·
+<a href="https://machine-noetique.histoire-des-sciences.eu" rel="external">Atlas P0–P33 ↗</a>.</p>
+
+<h3>A.1 — MVC-G : l'opérateur de verdict à coût gelé (S+/P/S−)</h3>
+<p>Entrée : une affirmation, un référentiel de tables vintage, une tolérance θ gelée. Sortie : l'écart tient-il dans θ ?
+132 contacts pesés, 18 fibres — de l'atome au diagramme de Hubble. Manifeste gelé avant mesure (MÉT-LIB-1.5),
+ancre temporelle OpenTimestamps optionnelle, tueurs exécutables I-G1/I-G2.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Pesée</th><th>Verdict</th><th>Fait mesuré</th></tr></thead>
+<tbody>
+<tr><td>Chantier NQ — arithmétique quantique du corpus</td><td><span class="verdict v-splus">S+</span> 0 θ</td>
+    <td>Charges des quarks recomptées exactes : p(uud) = +1, n(udd) = 0 ; isotopes H/D/T (Z = 1, A croissant). La machine classe par population et fabrication, non par modèle propre.</td></tr>
+<tr><td>Pourcentages du proton</td><td><span class="verdict v-splus">S+</span> 0,067 θ</td><td>Recomptables à trois chiffres.</td></tr>
+<tr><td>Quickstarts fondateurs — Dirac, H₂⁺</td><td><span class="verdict v-splus">S+</span></td><td>Deux pesées refaites en dix minutes contre tables vintage ; capot (tare, chaîne typée, calibre) documenté.</td></tr>
+<tr><td>Couplet Lamb, spectroscopie CO, g-2</td><td><span class="verdict v-splus">S+</span></td><td>Plusieurs S+ à 0 θ sur la spectroscopie et les constantes dérivées.</td></tr>
+<tr><td>LOI-HARMONIQUE — formule de Koide</td><td><span class="verdict v-splus">S+</span> 9,2·10⁻⁵ θ</td><td>La coïncidence de Koide sur les leptons chargés tient largement dans la tolérance gelée.</td></tr>
+<tr><td>O4★ — isotherme Tuinstra–Koenig</td><td><span class="verdict v-splus">S+</span> 0,93 θ</td><td>Fermée au cheveu : le verdict le plus serré du registre.</td></tr>
+<tr><td>Fibre W-DE — équation d'état de l'énergie noire</td><td><span class="verdict v-p">P</span> ×2 · <span class="verdict v-sminus">S−</span> bord · borne</td><td>Quatre fabrications DESI DR2 pesées : deux au cheveu, un S− de bord, une borne. Le désaccord est instrumenté, pas lissé.</td></tr>
+<tr><td>Fouille des Brouillons — motif « copie »</td><td><span class="verdict v-sminus">S−</span> 9,6 θ</td><td>Échec publié : le motif interne au corpus ne survit pas à la pesée.</td></tr>
+</tbody></table></div>
+
+<h3>A.2 — MCS : la Machine à Coïncidences Stables (CS+/CSp/CS−/CSi/CS0)</h3>
+<p>Question différente : une correspondance entre deux domaines est-elle <em>stable</em> sous un groupe de déformations
+déclaré ? Carte rédigée et scellée (SHA-256) avant toute mesure, démonstration de puissance obligatoire avant gel
+(règle 1.2), PRNG public déterministe, exécution unique, journaux chaînés. État au jalon 8 (12 octobre 2026) :
+27 cartes numérotées + 3 refontes.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Carte</th><th>Verdict</th><th>Fait mesuré</th></tr></thead>
+<tbody>
+<tr><td>Benford × CODATA (étalon)</td><td><span class="verdict v-csplus">CS+</span></td><td>La distribution des constantes physiques suit Benford de façon stable — étalon de la machine.</td></tr>
+<tr><td>Zipf × texte (étalon II)</td><td><span class="verdict v-csplus">CS+</span></td><td>Deuxième étalon, domaine linguistique.</td></tr>
+<tr><td>RAR × SPARC</td><td><span class="verdict v-csplus">CS+</span></td><td>La relation d'accélération radiale des galaxies (base SPARC) est stable sous les déformations déclarées.</td></tr>
+<tr><td>Koide × leptons</td><td><span class="verdict v-csplus">CS+</span></td><td>Confirmation inter-machines du S+ MVC-G, cette fois sous déformations.</td></tr>
+<tr><td>Résonances orbitales × Exoplanet Archive</td><td><span class="verdict v-csplus">CS+</span></td><td>Les commensurabilités orbitales exoplanétaires tiennent.</td></tr>
+<tr><td>Tension H₀ × Pantheon+</td><td><span class="verdict v-csplus">CS+</span></td><td>La tension Hubble est une coïncidence stable des données publiées.</td></tr>
+<tr><td>Titius–Bode</td><td><span class="verdict v-dort">CSp — dort</span></td><td>Puissance insuffisante : la carte dort, publiée comme telle.</td></tr>
+<tr><td>BBN · ERD (BCICIV-2a) · ratios de masses du corpus</td><td><span class="verdict v-csp">CSp</span></td><td>La carte dort — ni confirmée ni tuée.</td></tr>
+<tr><td>Tension S₈</td><td><span class="verdict v-csp">CSp</span></td><td>Forte avec les éditions historiques, s'effondre sous KiDS-Legacy : <em>la coïncidence dépend de l'édition des données</em>.</td></tr>
+<tr><td>Tarif des horizons (MCS-24)</td><td><span class="verdict v-csi">CSi</span></td><td>Anti-stable, la plus forte du registre : la coïncidence meurt de sa convention de cadran.</td></tr>
+<tr><td>Forme conjointe de Koide · canal leptonique · porteur réparé × tarif</td><td><span class="verdict v-csminus">CS−</span></td><td>Structurels : la correspondance meurt sous déformation, à puissance complète.</td></tr>
+<tr><td>Unitarité CKM · plancher KSS · w = −1 exact · quasi-unification SM · tarif × contenu spectral · siège neutrino</td><td><span class="verdict v-open">non scellées</span></td><td>6 candidates refusées : la machine ne joue pas sans pouvoir démontré.</td></tr>
+</tbody></table></div>
+
+<h3>A.3 — Le banc spectral KO-6 (chantiers T) et l'archive P0–P48</h3>
+<p>Triplets spectraux finis de KO-dimension 6 : fiche gelée avant exécution, falsifiers tuables, verdicts auto-empreintés.
+L'archive canonique du corpus historique (P0–P48 : 24 succès, 9 partiels-négatifs, registre de 20 frontières mesurées)
+y est conservée telle quelle — ses résultats n'engagent pas le protocole MVC-G.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Chantier</th><th>Fait mesuré</th></tr></thead>
+<tbody>
+<tr><td>Porteur PORTEUR-KO6-A3b-DIM5 (T13)</td><td>A = ℂ ⊕ M₂(ℂ), forme {0, ρ−1, ρ+1} — un zéro protégé par l'algèbre.</td></tr>
+<tr><td>Modèle Standard dans le banc (T9/T10)</td><td>Les fluctuations intérieures se décomposent en 6 = 4 ⊕ 2 ; le junk U(1) meurt par sa trace (Tr = −16i).</td></tr>
+<tr><td>Relation d'ancre (T12)</td><td>Λ²_sel = ρ² + 3 − a₂/a₀, forme close ; le cadran survit à l'unimodularité.</td></tr>
+<tr><td>Chaîne du seesaw (T14)</td><td>À M_R = 1, les valeurs propres sont ±φ et ±1/φ — forme close vérifiée sur grille.</td></tr>
+<tr><td>Texture minimale (T16)</td><td>Deux splittings NuFIT exigent le rang 2 : l'état le plus léger est exactement sans masse → Σm_ν = 59,0 meV scellé au plancher NO.</td></tr>
+<tr><td>Pont φ (T17–T65, 49 campagnes)</td><td>« Le monde discret signe φ, le monde continu signe des entiers » : Fricke à 10⁻¹⁶ (T24), charge de Hopf Q = 0,999808 (T41), loi de Vinen (T47), β ≈ 1,4·10⁻⁵ fait de régime (T48) ; 52 défauts de banc trouvés et publiés.</td></tr>
+<tr><td>Dynamique dérivée Φ-DYN (nov. 2026)</td><td>Trace map de Kohmoto générateur reconnu (Fricke conservée à 2,6·10⁻³⁰, orbite seule classifiant 80/80) ; frontière de blocking w* = 16 ; « deux canaux, deux seuils : une frontière n'existe que relativement à un observable ».</td></tr>
+<tr><td>Brume (BRUME)</td><td>Chainon de Fibonacci non-Hermitien (Hatano–Nelson, c = e^{2iπ/3}) : 233/233 valeurs propres vérifiées à 40 chiffres ; profil universel δ = 0,626 ρ-invariant ; ansatz δ = √(2η/ωµ_eff) vérifié en signe.</td></tr>
+<tr><td>Frontière r₁₂ (P31→P32→P33, archive)</td><td>La frontière entre régime discret (dérivable) et continu à deux corps (coûteux) est un objet mesuré : constitutive, loi Z-dépendante, renforcée par contradiction des contraintes exactes. Borne P19 : a ≈ 0,28 fm.</td></tr>
+</tbody></table></div>
+
+<!-- ======================= B. CORRESPONDANCES ACADÉMIQUES ======================= -->
+<h2 id="correspondances">B — La grande table de correspondance</h2>
+<p class="note">Chaque ligne : un fait de machine, son interlocuteur académique, l'état de la recherche vérifié
+au 7 novembre 2026, et le chantier où les deux peuvent se répondre. Certaines lignes exigent de
+<em>réinterpréter</em> un résultat passé — elles sont marquées ⟳.</p>
+
+<div class="table-scroll"><table>
+<thead><tr><th style="min-width:170px">Fait de machine</th><th style="min-width:190px">Interlocuteur académique</th><th style="min-width:230px">État académique 2025–2026</th><th style="min-width:230px">Ce que la machine éclaire / chantier</th></tr></thead>
+<tbody>
+
+<tr><td><strong>Σm_ν = 59,0 meV scellé</strong> — plancher NO, texture minimale rang 2 (T16) ; seul nombre pré-publié du registre</td>
+<td>Cosmologie des neutrinos : DESI (Elbers et al., PRD 112, 083513), Planck, ACT ; oscillations (NuFIT 6.x) ; KATRIN (<em>Science</em> 388, 2025)</td>
+<td>DESI DR2 + CMB : Σm_ν &lt; 64,2 meV (95 %, ΛCDM) — la borne rase le plancher NO (59 meV) et exclut quasi tout l'ordre inversé (facteur de Bayes K &gt; 460, arXiv 2606.18987) ; l'analyse à masse « effective » montre une tension ~3σ. KATRIN : m_β &lt; 0,45 eV.</td>
+<td>La position du banc est publiée <em>avant</em> le fait, avec condition de mort datée : « mesuré nettement au-dessus tue la texture minimale et le porteur ». Cas d'école de pré-inscription en physique. Chantier : carte MCS gelée sur chaque future borne DESI/Euclid.</td></tr>
+
+<tr><td><strong>Ordre normal minimal</strong> — position pré-publiée (registre d'anticipation)</td>
+<td>JUNO (IHEP/CAS) ; DUNE, Hyper-Kamiokande ; fits globaux NuFIT</td>
+<td>JUNO a publié son premier résultat (<em>Nature</em> 654, 343–348, juin 2026) : sin²θ₁₂ = 0,3092 ± 0,0087 et Δm²₂₁ = (7,50 ± 0,12)·10⁻⁵ eV² en 59 jours de données — précision ×1,6 sur toute la littérature passée. L'ordre de masse n'est pas encore tranché (attendu ~2032, &gt; 3σ).</td>
+<td>Les splittings NuFIT qui fixent la texture rang 2 vont se resserrer : chaque fit global est un ré-étalonnage gratuit du porteur. Chantier : recalage T16 à chaque release NuFIT, verdicts datés.</td></tr>
+
+<tr><td><strong>0νββ attendu</strong> — registre d'anticipation</td>
+<td>LEGEND-200/1000, KamLAND-Zen, CUORE/CUPID, nEXO, SNO+</td>
+<td>LEGEND-200 : m_ββ &lt; [75, 200] meV (90 % CL) ; KamLAND-Zen &lt; [28, 122] meV. La génération tonne (LEGEND-1000 : [9, 21] meV à 3σ) sondera l'ordre inversé entier et une partie du normal.</td>
+<td>Le banc a trois saveurs de lexique : « seule une détection stérile ouvre un quatrième mot ». La correspondance 59 meV ↔ m_ββ minimal est une cible numérique publique pour la génération tonne.</td></tr>
+
+<tr><td><strong>PRED-12 — g du muon</strong> (2,0023318418 affiché) ⟳</td>
+<td>Muon g-2 Theory Initiative (WP2025, arXiv:2505.21476) ; Fermilab E989 ; J-PARC g-2/EDM ; MUonE</td>
+<td>Résultat final Fermilab (juin 2025) : a_μ = 0,001165920705(148), 127 ppb. Le White Paper 2025 (HVP sur réseau) <em>résorbe l'anomalie</em> : plus de tension significative ; mais la voie « data-driven » reste en tension interne (CMD-3). Calculs avril 2026 (<em>Nature</em>) : 0,5σ. J-PARC prendra des données dans les prochaines années.</td>
+<td>⟳ Réinterprétation nécessaire : l'anomalie est morte par déplacement méthodologique (réseau vs dispersif), non par mesure. La machine peut peser l'écart entre les deux évaluations HVP elles-mêmes — le désaccord théorie-théorie est devenu l'objet.</td></tr>
+
+<tr><td><strong>Fibre W-DE — quatre fabrications DESI DR2</strong> (2 P, 1 S− de bord, 1 borne)</td>
+<td>DESI DR2 (Abdul-Karim et al., PRD 112, 083515) ; Euclid ; Rubin/LSST ; critiques méthodologiques (Efstathiou 2025)</td>
+<td>DESI DR2 : préférence 2,8–4,2σ pour une énergie noire évolutive (w₀ &gt; −1, w_a &lt; 0, croisement fantôme z ≈ 0,5), selon la compilation de supernovæ ; Efstathiou rétorque qu'une analyse BAO alternative ne montre « aucune évidence significative ». La carte MCS « w = −1 exact » reste non scellée (puissance insuffisante).</td>
+<td>La fibre pèse les fabrications <em>une par une</em> — exactement là où le débat académique se joue (sensibilité au choix Pantheon+/Union3/DESY5, traceurs LRG1/LRG2). Chantier : pesée des fabrications Euclid DR1 dès publication.</td></tr>
+
+<tr><td><strong>Tension H₀ × Pantheon+ — CS+</strong></td>
+<td>SH0ES (Riess et al.) vs Planck ; revues de tensions (Di Valentino et al.) ; JWST, standard sirens (LIGO)</td>
+<td>La tension atteint ~4,5σ (DESI+BBN vs SH0ES, indépendante du CMB). Aucune résolution acceptée ; le débat s'est déplacé vers les systématiques d'étalonnage.</td>
+<td>Le CS+ certifie que la tension est une propriété <em>stable</em> des données publiées, pas un artefact de cadran — le complément symétrique du CSi du tarif des horizons.</td></tr>
+
+<tr><td><strong>S₈ — CSp</strong> (forte sur éditions historiques, s'effondre sous KiDS-Legacy) ⟳</td>
+<td>KiDS-Legacy, DES-Y3/Y6, HSC ; Euclid</td>
+<td>La tension S₈ varie de ~3σ à quasi nulle selon le relevé et l'édition — le paysage 2025 est lui-même instable.</td>
+<td>⟳ Leçon méthodologique exportable : une « tension » peut être une propriété de l'édition des données. La MCS offre le protocole tout fait pour tester la stabilité <em>inter-éditions</em> de n'importe quelle tension cosmologique.</td></tr>
+
+<tr><td><strong>RAR × SPARC — CS+</strong></td>
+<td>McGaugh, Lelli &amp; Schombert (base SPARC) ; débat MOND/ΛCDM (Kroupa, Banik, Haslbauer) ; Euclid</td>
+<td>La relation d'accélération radiale reste l'un des faits empiriques les plus disputés de la dynamique galactique : sa dispersion intrinsèque et sa causalité divisent toujours la communauté.</td>
+<td>Le CS+ mesure la <em>stabilité</em> de la relation, question orthogonale à son interprétation (MOND ou matière noire) : la machine arbitre la robustesse, pas l'ontologie.</td></tr>
+
+<tr><td><strong>Koide × leptons — CS+ / S+ à 9,2·10⁻⁵ θ</strong></td>
+<td>Koide (1982) ; phénoménologie des textures de masses (Zenczykowski, Brannen) ; raffinements PDG des masses leptoniques</td>
+<td>La formule Q = 2/3 reste à ~10⁻⁵ des masses pole — sans mécanisme accepté ; la littérature oscille entre « coïncidence » et « indice de texture ».</td>
+<td>Double certification inter-machines (pesée locale MVC-G + stabilité MCS). La forme conjointe a été mesurée CS− à puissance complète : la machine publie donc aussi où Koide <em>meurt</em>.</td></tr>
+
+<tr><td><strong>Benford × CODATA — CS+ (étalon)</strong></td>
+<td>Littérature Benford : forensique statistique (Nigrini), tests des constantes fondamentales, méta-science</td>
+<td>Benford est outil standard d'audit de données ; son application aux constantes physiques reste un genre marginal mais publié.</td>
+<td>Chez la machine, Benford n'est pas un résultat mais un <em>étalon</em> : la coïncidence la mieux documentée sert à calibrer le verdict des autres. Inversion pédagogique réutilisable en cours de méthodologie.</td></tr>
+
+<tr><td><strong>Titius–Bode — CSp (dort)</strong> · <strong>résonances orbitales × Exoplanet Archive — CS+</strong> ⟳</td>
+<td>Statistique des systèmes exoplanétaires (Weiss et al. 2018 ; chaînes de résonances TRAPPIST-1) ; histoire des sciences (la « loi » de 1766)</td>
+<td>La version solaire historique n'a aucun statut ; les commensurabilités exoplanétaires, elles, sont un champ actif (chaînes Laplace-like, pics près des résonances).</td>
+<td>⟳ Réinterprétation exemplaire : la même structure, dormante dans son berceau historique, devient mesurable sur le catalogue d'exoplanètes. Le dormeur publié n'est pas un échec honteux : il date le changement de régime de données.</td></tr>
+
+<tr><td><strong>Banc spectral KO-6 : porteur A = ℂ ⊕ M₂(ℂ), fluctuations 6 = 4 ⊕ 2, ancre Λ²_sel</strong></td>
+<td>Géométrie non commutative : Connes–Chamseddine (action spectrale), Barrett, Dąbrowski ; « quanta of geometry » ; classifications des triplets finis</td>
+<td>L'approche spectrale du Modèle Standard reste un programme académique minoritaire mais continu (reconstruction du MS, contraintes sur Higgs, seesaw droitier) ; la KO-dimension 6 est son cadre canonique.</td>
+<td>Le banc fournit ce que le programme n'a pas : des énoncés <em>falsifiables par construction</em> (falsifiers tuables, fiches gelées) et un lexique mesuré (3 mots certifiés, 3 orphelins, 1 contredit — T15) entre vocabulaire spectral et vocabulaire des particules.</td></tr>
+
+<tr><td><strong>Texture minimale : l'état le plus léger exactement sans masse (T16)</strong></td>
+<td>Textures à zéros de la matrice de masse des neutrinos ; modèles seesaw minimaux ; fits NuFIT</td>
+<td>Les textures à deux zéros et les seesaw minimaux sont un corpus phénoménologique établi ; le scénario « m₁ = 0 » en ordre normal est précisément le point que DESI rase par le haut.</td>
+<td>Le fait mesuré du banc (le rang 2 est <em>exigé</em> par deux splittings) donne une version algébrique, sans paramètre, de ce que la phénoménologie pose comme ansatz.</td></tr>
+
+<tr><td><strong>Chainon non-Hermitien Hatano–Nelson ; brume δ = 0,626 ; PT-symétrie brisée par le flux</strong></td>
+<td>Physique non-Hermitienne : effet peau (Hatano–Nelson 1996 ; boom depuis 2018, Yao–Wang, Bergholtz) ; PT-symétrie (Bender) ; quasicristaux non-Hermitiens</td>
+<td>Champ académique en forte croissance (topologie non-Hermitienne, spectres complexes, expériences photoniques et circuits).</td>
+<td>Le banc a mesuré un cas exact à 40 chiffres (233/233) et nommé un observable grossier ρ-invariant : terrain de confrontation direct pour les théoriciens du skin effect — et pont inattendu entre quasicristal et phase non Hermitienne.</td></tr>
+
+<tr><td><strong>Pont φ : Kohmoto/Fricke, Penrose, McKay-Ê8, quasicristaux réels (Dong 147/147)</strong></td>
+<td>Modèle de Kohmoto/Hofstadter ; quasicristaux (Shechtman, prix Nobel 2011) ; correspondance de McKay ; théorie des approximants</td>
+<td>Corpus classique mais vivant (photonique, moiré, matériaux topologiques).</td>
+<td>Le pont φ énonce une symétrie mesurée : « le discret signe φ, le continu signe des entiers » — une loi de correspondance testable entre deux littératures qui ne se citent presque pas.</td></tr>
+
+<tr><td><strong>Turbulence superfluide : loi de Vinen insubmersible, démographie, énergie bouclée</strong></td>
+<td>Turbulence quantique : Vinen, Barenghi, Skrbek ; expériences hélium ; reconnexions de vortex (Kleckner–Irvine)</td>
+<td>La loi de Vinen (décroissance en t⁻¹ de la densité de ligne) reste la référence expérimentale et numérique ; la démographie des reconnexions est un front actif.</td>
+<td>Le banc mesure la loi « insubmersible » dans son régime et publie la frontière (w* = 16, mort nette des plateaux) : cartographie régime/limite utilisable par les simulateurs.</td></tr>
+
+<tr><td><strong>Entiers topologiques : charge de Hopf Q = 0,999808, reconnexion datée Lk 1,05 → 0</strong></td>
+<td>Solitons topologiques : hopfions magnétiques (Kent et al. 2021), skyrmions ; dynamique des nœuds en fluides</td>
+<td>Les hopfions viennent d'être observés en laboratoire (magnétisme, photonique) ; la datation des événements de reconnexion est une difficulté expérimentale reconnue.</td>
+<td>La machine <em>date</em> les événements (t = 7,5) et mesure les sauts unitaires : protocole de comptage exportable vers les expériences de hopfions.</td></tr>
+
+<tr><td><strong>PRED-15 — limite hydrodynamique du tableau périodique : Z_max ≈ 173</strong></td>
+<td>Éléments superlourds : charge critique (Greiner, Zα &gt; 1, « plongée » du 1s) ; usines SHE (JINR, RIKEN, GANIL) ; fin du tableau (Pyykkö)</td>
+<td>Z = 173 est la borne théorique historique où le champ du noyau ponctuel devient supercritique ; la fin pratique du tableau est un programme expérimental (Z = 119, 120 en cours de chasse).</td>
+<td>La prédiction recoupe une borne académique venue d'une tout autre route (QED des champs forts) : convergence à documenter comme correspondance, non comme preuve.</td></tr>
+
+<tr><td><strong>PRED-16 — shift de masse de l'électron en champ intense (∝ E², vs QED en 1/ω²)</strong></td>
+<td>QED en champ fort : SLAC E-144, E-320 (FACET-II), LUXE (DESY), ELI ; habillage de masse laser</td>
+<td>Les expériences de champ fort atteignent le régime où le habillage de masse est mesurable ; la dépendance en fréquence est exactement le discriminant proposé.</td>
+<td>Le test 800 nm vs 400 nm à ~10¹⁵ V/m est exprimable comme protocole expérimental standard : la prédiction est déjà écrite dans le langage des faisceaux.</td></tr>
+
+<tr><td><strong>PRED-23 — EDM du neutron d_n &lt; 3·10⁻²⁶ e·cm</strong> ⟳</td>
+<td>nEDM : PSI (borne actuelle 1,8·10⁻²⁶ e·cm, Abel et al. 2020), n2EDM, ILL, SNS</td>
+<td>La borne expérimentale est <em>déjà passée sous</em> le seuil de la prédiction ; n2EDM vise 10⁻²⁷.</td>
+<td>⟳ À réinterpréter honnêtement : la prédiction est satisfaite mais non discriminante — un cas d'école de ce que le registre doit faire quand le réel « dépasse » une borne publiée (le dire, dater, ne pas renégocier).</td></tr>
+
+<tr><td><strong>Méthode : zéro paramètre ajusté, gel avant mesure, puissance démontrée avant scellement, B3-FAIL publiés, SHA-256 + OpenTimestamps</strong></td>
+<td>Méta-science : registered reports (Center for Open Science), analyses aveugles (LHC, g-2), « severe testing » (Mayo), reproductibilité computationnelle (ACM badges, FAIR, Zenodo)</td>
+<td>La pré-inscription est norme en psychologie, rare en physique (analyses aveugles oui, registres publics de protocoles presque pas) ; la crise de reproductibilité reste un champ actif.</td>
+<td>L'écosystème est une <em>implémentation complète</em> de ce que la méta-science prescrit : registre public scellé, rejou trimestriel, échecs publiés. Objet d'étude réciproque : les méthodologues ont là un système entier à examiner.</td></tr>
+
+</tbody></table></div>
+
+<!-- ======================= C. REGISTRE DE VEILLE ======================= -->
+<h2 id="veille">C — Registre de veille : les faits qui peuvent tuer ou confirmer</h2>
+<p class="note">Doctrine du <a href="https://github.com/PORTEMANN/registre-public" rel="external">registre-public</a> :
+positions publiées avant les faits, conditions de mort datées ; à chaque fait : source épinglée et hachée,
+puis une carte MCS pré-enregistrée mesure la correspondance — jamais de lecture à chaud.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Source surveillée</th><th>Fait attendu</th><th>Position de l'écosystème</th><th>Condition de mort / horizon</th></tr></thead>
+<tbody>
+<tr><td>DESI (DR3, analyses Σm_ν) · Euclid</td><td>Borne Σm_ν resserrée ; statut de w(z)</td><td>Σm_ν = 59,0 meV scellé au plancher NO</td><td>Σm_ν mesuré nettement au-dessus du plancher → texture minimale et porteur tués comme secteur neutrino</td></tr>
+<tr><td>JUNO (données continues, ~2032)</td><td>Ordre de masse à &gt; 3σ</td><td>Ordre normal minimal</td><td>Ordre inversé établi → mort directe</td></tr>
+<tr><td>LEGEND-200/1000 · KamLAND-Zen · CUPID</td><td>0νββ : borne ou détection</td><td>0νββ attendu (neutrinos de Majorana, seesaw)</td><td>Exclusion de la fenêtre IO entière + NO partielle resserre le lexique à trois saveurs</td></tr>
+<tr><td>KATRIN (fin de prise de données) · Project 8</td><td>m_β directe sous 0,2 eV</td><td>Compatible avec 59 meV</td><td>Mesure positive incompatible → réouverture</td></tr>
+<tr><td>TRISTAN (KATRIN upgrade)</td><td>Neutrino stérile keV</td><td>« Seule une détection stérile ouvre un quatrième mot du lexique »</td><td>Détection → refonte du lexique (carte à pré-enregistrer)</td></tr>
+<tr><td>Muon g-2 : WP théorique final, J-PARC g-2/EDM, MUonE</td><td>Règlement HVP réseau vs data-driven ; mesure indépendante</td><td>PRED-12 affichée ; anomalie résorbée (WP2025)</td><td>Résurgence d'un écart &gt; 3σ → réactivation du contact mvcg</td></tr>
+<tr><td>n2EDM (PSI), SNS-nEDM</td><td>d_n vers 10⁻²⁷ e·cm</td><td>PRED-23 (satisfaite, non discriminante)</td><td>Détection d_n non nul → mort de toute lecture CP-conservatrice du banc</td></tr>
+<tr><td>Euclid DR1+ · Rubin/LSST</td><td>w(z), S₈, RAR à grandes échelles</td><td>W-DE en fibre ; S₈ CSp ; RAR CS+</td><td>Chaque release = nouvelle fabrication à peser (protocole W-DE gelé)</td></tr>
+<tr><td>LUXE (DESY) · E-320 (FACET-II) · ELI</td><td>QED de champ fort, habillage de masse</td><td>PRED-16 : Δm/m ∝ E² indépendant de ω</td><td>Test 800 nm vs 400 nm : la dépendance en 1/ω² de la QED est la théorie à battre</td></tr>
+<tr><td>Usines superlourdes (JINR, RIKEN, GANIL)</td><td>Z = 119–120 ; îlot de stabilité</td><td>PRED-15 : Z_max ≈ 173 (limite hydrodynamique)</td><td>Horizon long : chaque nouvel élément resserre la pente vers la borne</td></tr>
+</tbody></table></div>
+
+<!-- ======================= D. FUTURS CHANTIERS ======================= -->
+<h2 id="chantiers">D — Futurs chantiers des machines (propositions)</h2>
+<div class="card-grid">
+<article class="card"><h3>MCS — cartes à sceller</h3>
+<p>Carte « borne DESI Σm_ν » pré-enregistrée avant DR3 ; carte « éditions S₈ » (stabilité inter-éditions comme observable) ;
+carte « ordre de masse JUNO » gelée avant l'analyse ; carte « quatrième mot » (stérile TRISTAN) avec puissance démontrée ;
+carte Euclid-w reprenant les 6 candidates non scellées dès que la puissance passe la règle 1.2.</p></article>
+<article class="card"><h3>MVC-G — nouvelles pesées</h3>
+<p>Pesée de l'écart HVP réseau vs data-driven (g-2) comme contact à part entière ; fabrications Euclid DR1 sur la fibre W-DE ;
+tables NuFIT 6.x en référentiel daté pour le couplet seesaw ; ouverture d'une fibre « tensions » (H₀, S₈) en unités rationalisées.</p></article>
+<article class="card"><h3>Banc spectral — extensions</h3>
+<p>Suite Φ-DYN : la brume comme observable inter-échelles (ρ-invariance testée sur d'autres chainons non-Hermitiens) ;
+lexique T15 étendu : faire passer un mot orphelin au statut certifié par un chantier dédié ;
+confrontation du porteur aux nouvelles classifications académiques des triplets finis.</p></article>
+<article class="card"><h3>Pesée publique</h3>
+<p>Ouvrir <a href="https://github.com/PORTEMANN/pesee-publique" rel="external">pesee-publique</a> aux correspondances de cette
+table : chaque ligne académique reçoit son affirmation collable et son verdict reproductible côté navigateur, sans serveur.</p></article>
+<article class="card"><h3>Pont documentaire</h3>
+<p>Boucle avec les cinq autres tables : Références (notices des collaborations citées), Tables physico-chimiques (AME2020/NUBASE
+comme référentiels gelés), Brouillons (marquage des motifs tués), Index Universel (chaque ligne = une fiche de veille synchronisée).</p></article>
+<article class="card"><h3>Méthode — vers l'académie</h3>
+<p>Rédiger le protocole MCS (règle 1.2, PRNG public, journaux chaînés) en article de méthodologie soumis à une revue de
+méta-science : l'écosystème comme étude de cas de pré-inscription en physique computationnelle.</p></article>
+</div>
+
+<!-- ======================= E. AGENTS ======================= -->
+<h2 id="agents">E — Les agents de veille</h2>
+<p>Deux agents automatiques entretiennent cette table (activés le 7 novembre 2026, espace Kimi Work) :</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Agent</th><th>Cadence</th><th>Mission</th><th>Sortie</th></tr></thead>
+<tbody>
+<tr><td><strong>Veille écosystème</strong></td><td>Hebdomadaire (lundi 08:17, Europe/Paris)</td>
+<td>Scanner github.com/PORTEMANN (commits, releases, nouveaux jalons mvcg/MCS/banc) et les six tables web ; détecter nouveaux verdicts, cartes scellées, errata.</td>
+<td>Journal daté des changements + propositions de mise à jour des sections A et B.</td></tr>
+<tr><td><strong>Veille académique</strong></td><td>Mensuelle (1er du mois, 09:13, Europe/Paris)</td>
+<td>Surveiller les sources du registre (DESI, JUNO, LEGEND, KATRIN, TRISTAN, g-2/J-PARC, nEDM, Euclid, LUXE, SHE) : publications, releases, prépublications arXiv.</td>
+<td>Alertes croisées avec les conditions de mort de la section C ; rien n'est lu à chaud — chaque alerte propose une carte MCS pré-enregistrée.</td></tr>
+</tbody></table></div>
+<p class="note">Doctrine commune aux machines et aux agents : dater, hacher, ne jamais renégocier une position après le fait.</p>
+
+<h2>Les tables de l'écosystème</h2>
+<p class="muted">Cette table s'associe aux six autres, chacune avec sa charte propre :</p>
+<ul>
+<li><a href="https://references.histoire-des-sciences.eu" rel="external">Références Maths &amp; Sciences ↗</a> — la compilation de travail (148 articles, 40 résultats, 42 références, 85 programmes)</li>
+<li><a href="https://theosophie.histoire-des-sciences.eu" rel="external">Le Corpus Théosophique ↗</a> — neuf ouvrages en lecture croisée</li>
+<li><a href="https://techniques.histoire-des-sciences.eu" rel="external">Tables Physico-Chimiques ↗</a> — le cahier de laboratoire (118 éléments, 3 557 nucléides, CODATA)</li>
+<li><a href="https://machine-noetique.histoire-des-sciences.eu" rel="external">Machine Noétique — Atlas P0–P33 ↗</a> — les résultats des simulations en tableaux</li>
+<li><a href="https://chronologie.histoire-des-sciences.eu" rel="external">Brouillons — Recherche Computationnelle ↗</a> — le carnet en graphe de connaissances</li>
+<li><a href="https://index.portemann.eu" rel="external">Index Universel Noétique ↗</a> — le routeur (61 concepts, 110 prédictions, 141 correspondances)</li>
+</ul>
+
+<footer class="site-footer" style="margin-left:-1.25rem;margin-right:-1.25rem;padding-left:1.25rem;padding-right:1.25rem">
+<p class="muted">Machines à éprouver × Recherche académique — table de correspondance et de veille ·
+écosystème <a href="https://histoire-des-sciences.eu" rel="external">histoire-des-sciences.eu</a> ·
+Patrice Portemann, ORCID 0009-0009-4016-8389 ·
+état de la recherche académique vérifié au 7 novembre 2026 ·
+cette table aligne des faits mesurés, elle ne tranche pas la vérité des théories.</p>
+</footer>
+</main>
+</body>
+</html>
